@@ -1,0 +1,39 @@
+Przygotuj prosty programik, który:
+
+    Wypisze na ekranie swój PID
+
+    będzie czekał w pętli nieskończonej do momentu otrzymania sygnału użytkownika (SIGUSR1)
+
+    W momencie otrzymania tego sygnału program powinien wypisać na ekranie, że dostał sygnał i się zakończyć.
+
+ZADANIE 1.
+#include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <unistd.h>
+
+void signalHandler(int signum) {
+    if (signum == SIGUSR1) {
+        printf("Otrzymano sygnał SIGUSR1\n");
+        exit(0);
+    }
+}
+
+int main() {
+    /* Wypisanie PID procesu */
+    printf("PID: %d\n", getpid());
+
+    /* Zarejestrowanie obsługi sygnału SIGUSR1 */
+    signal(SIGUSR1, signalHandler);
+
+    /* Oczekiwanie w pętli nieskończonej */
+    while (1) {
+        /* Poczekaj na sygnał */
+        pause();
+    }
+
+    return 0;
+}
+
+
+

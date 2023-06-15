@@ -1,0 +1,78 @@
+Przygotuj program, który będzie pozwalał na uruchomienie tylko jednej swojej instancji. 
+Dodatkowo w momencie próby uruchomienia drugiej instancji będzie powiadamiał już uruchomiony proces o tym.
+Można to zrobić tak:
+
+    Program uruchamia się i sprawdza, czy jest plik /tmp/lock
+
+    Jeśli taki plik nie istnieje, wtedy:
+tworzony jest taki plik. Do niego zapisywany jest PID bieżącego procesu
+
+program instaluje obsługę sygnału USR1, która w momencie otrzymania sygnału wypisuje tekst: 
+Wyrkyto probe uruchomienia drugiej instancji programu.
+   Program instaluje obsługę sygnału generowanego przez CTRL+C (poszukaj jaki to sygnał), która w momencie 
+otrzymania tego sygnału skasuje plik /tmp/lock i spowoduje wyjście z pętli nieskończonej (patrz następny punkt)
+   Program wykonuje pętlę nieskończoną zawierającą tylko instrukcję sleep.
+Jeśli taki plik istnieje, wtedy:
+
+    Wczytywana jest zawartość tego pliku - pid procesu uruchomionego
+
+    generowany jest sygnał USR1 do procesu o pid takim jak wczytany
+
+    program kończy pracę
+ZADANIE 2.
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+
+#define LOCK_FILE "/tmp/lock"
+
+int kill(int pid, int sig);
+
+void signalHandler(int signum) {
+    if (signum == SIGUSR1) {
+        printf("Wykryto próbę uruchomienia drugiej instancji programu.\n");
+    } else if (signum == SIGINT) {
+        printf("Przechwycono sygnał SIGINT. Kończenie pracy programu.\n");
+        remove(LOCK_FILE);
+        exit(0);
+    }
+}
+
+int main() {
+    FILE *lockFile;
+    int pid;
+
+    lockFile = fopen(LOCK_FILE, "r");
+    if (lockFile == NULL) {
+        lockFile = fopen(LOCK_FILE, "w");
+        if (lockFile == NULL) {
+            perror("Nie można utworzyć pliku blokady");
+            exit(1);
+        }
+
+        pid = getpid();
+        fprintf(lockFile, "%d", pid);
+        fclose(lockFile);
+
+        signal(SIGUSR1, signalHandler);
+        signal(SIGINT, signalHandler);
+
+        while (1) {
+            sleep(1);
+        }
+    } else {
+        fscanf(lockFile, "%d", &pid);
+        fclose(lockFile);
+
+        kill(pid, SIGUSR1);
+	printf("Uruchomiona jest już instancja programu.\n");
+    }
+
+        return 0;
+
+}
+
+
+
+

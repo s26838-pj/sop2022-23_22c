@@ -1,0 +1,33 @@
+ZADANIE 1.
+Napisz program obliczający sumę 
+liczb wprowadzonych przez użytkownika (ze standardowego wejścia) i 
+wypisujący wynik na standardowe wyjście.
+
+#include <stdio.h>
+
+int main() {
+    int liczba, suma = 0;
+    int kontynuuj = 1;
+ printf("Wprowadz liczbe (0 aby zakonczyc):\n");
+
+    while (kontynuuj) {
+        scanf("%d", &liczba);
+
+        if (liczba == 0) {
+            kontynuuj = 0;
+        } else {
+            suma += liczba;
+        }
+    }
+ printf("Suma podanych liczb wynosi: %d\n", suma);
+
+    return 0;
+}
+
+Prosty program sumujący liczby całkowite, zmodyfikowałem go dodając
+warunek zatrzymania wprowadzania liczb. Użytkownik może wprowadzić tyle
+liczb ile zechce, chyba że skończy się pamięć ;/
+
+
+
+

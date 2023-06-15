@@ -1,0 +1,33 @@
+Napisz program wczytujący z pliku tekstowego ciąg liczb.
+
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    FILE *file;
+    int number, count = 0;
+
+    file = fopen("plik.txt", "r");
+
+    if (file == NULL) {
+        printf("Nie można otworzyć pliku.\n");
+        exit(1);
+    }
+
+    printf("Ciąg liczb z pliku:\n");
+
+    while (fscanf(file, "%d", &number) == 1) {
+        printf("%d\n", number);
+        count++;
+    }
+
+    fclose(file);
+
+    printf("Ilosc liczb: %d\n", count);
+
+    return 0;
+}
+
+
+
+
